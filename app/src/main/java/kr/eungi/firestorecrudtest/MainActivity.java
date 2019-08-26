@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeFirestroeData() {
-        // Create a new user with a first and last name
+        // Create a new user with a first and last Name
         Map<String, String> user = new HashMap<>();
         user.put(DB_FIELD_NAME, generateName());
 
