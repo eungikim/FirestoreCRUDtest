@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import kr.eungi.firestorecrudtest.db.NameRepository;
 import kr.eungi.firestorecrudtest.db.domain.Name;
+import kr.eungi.firestorecrudtest.util.NameGenerator;
 
 import static kr.eungi.firestorecrudtest.db.Constant.DB_COLLECTION_NAME;
 import static kr.eungi.firestorecrudtest.db.Constant.DB_FIELD_NAME;
@@ -50,21 +51,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                writeFirestoreData();
-//                updateFirestoreData("Everything Will Be Fine");
-                deleteFirestoreData();
             }
         });
 
-//        readFirestoreData();
-
-        String name = generateName();
+        readFirestoreData();
 
     }
 
-    private void writeFirestoreData() {
+    private void writeFirestoreData(String addedName) {
         // Create a new nameSet with a first and last Name
         Map<String, String> nameSet = new HashMap<>();
-        nameSet.put(DB_FIELD_NAME, generateName());
+        nameSet.put(DB_FIELD_NAME, addedName);
 
         // Add a new document with a generated ID
         mFirestoreDb.collection(DB_COLLECTION_NAME)
@@ -73,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        NameRepository repo = NameRepository.getInstance();
+                        Name addedName = new Name(documentReference.getId(), nameSet.get(DB_FIELD_NAME));
+                        repo.addName(addedName);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -129,8 +129,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateFirestoreData(String name) {
-        DocumentReference nameDocumentRef = mFirestoreDb.collection(DB_COLLECTION_NAME)
-                .document(NameRepository.getInstance().getNameList().get(0).getDocumentId());
+        String documentId = NameRepository.getInstance().findDocIdByName(name);
+        DocumentReference nameDocumentRef =
+                mFirestoreDb.collection(DB_COLLECTION_NAME).document(documentId);
 
         nameDocumentRef
                 .update(DB_FIELD_NAME, name)
@@ -167,6 +168,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String generateName() {
-        return "";
+        return NameGenerator.generateName();
     }
 }

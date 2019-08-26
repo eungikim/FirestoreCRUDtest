@@ -28,4 +28,13 @@ public class NameRepository {
     public void addName(Name newName) {
         mNameList.add(newName);
     }
+
+    public String findDocIdByName(String findName) {
+        for (Name name : mNameList) {
+            if (name.equals(findName)) {
+                return name.getDocumentId();
+            }
+        }
+        return null;
+    }
 }

@@ -1,14 +1,10 @@
 package kr.eungi.firestorecrudtest;
 
-import com.github.javafaker.Faker;
-
 import org.junit.Test;
 
-import java.nio.charset.Charset;
-import java.util.Locale;
-import java.util.Random;
+import kr.eungi.firestorecrudtest.util.NameGenerator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -21,6 +17,8 @@ public class ExampleUnitTest {
 
 
         for (int i = 0; i < 50; i++) {
+            String name = NameGenerator.generateName();
+            System.out.println(name);
         }
         assertEquals(4, 2 + 2);
     }
