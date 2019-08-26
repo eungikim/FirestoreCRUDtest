@@ -19,10 +19,10 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
 
-        Faker faker = new Faker();
+        Faker faker = new Faker(new Locale("ko"));
 
-        for (int i = 0; i < 1000; i++) {
-            System.out.println(faker.beer().name());
+        for (int i = 0; i < 50; i++) {
+            System.out.println(faker.name().fullName());
         }
         assertEquals(4, 2 + 2);
     }
