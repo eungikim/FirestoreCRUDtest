@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.javafaker.Faker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        readFirestoreData();
+//        readFirestoreData();
+
+        String name = generateName();
 
     }
 
@@ -166,8 +167,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String generateName() {
-//        Locale locale = new Locale("ko");
-        Faker generater = new Faker(/*locale*/);
-        return generater.name().fullName();
+        return "";
     }
 }
