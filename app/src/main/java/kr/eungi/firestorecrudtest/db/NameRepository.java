@@ -24,4 +24,8 @@ public class NameRepository {
     public List<Name> getNameList() {
         return mNameList;
     }
+
+    public void addName(Name newName) {
+        mNameList.add(newName);
+    }
 }
