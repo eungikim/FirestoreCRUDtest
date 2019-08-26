@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                writeFirestoreData();
-                updateFirestoreData2("Everything Will Be Fine");
+//                updateFirestoreData("Everything Will Be Fine");
+                deleteFirestoreData();
             }
         });
 
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void updateFirestoreData2(String name) {
+    private void updateFirestoreData(String name) {
         DocumentReference nameDocumentRef = mFirestoreDb.collection(DB_COLLECTION_NAME)
                 .document(NameRepository.getInstance().getNameList().get(0).getDocumentId());
 
@@ -144,6 +145,24 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "Error updating document", e);
                     }
                 });
+    }
+
+    private void deleteFirestoreData() {
+        mFirestoreDb.collection(DB_COLLECTION_NAME).document(NameRepository.getInstance().getNameList().get(0).getDocumentId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+
     }
 
     private String generateName() {
