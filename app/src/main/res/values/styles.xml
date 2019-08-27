@@ -10,4 +10,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="FlatButton" parent="Theme.AppCompat.Light">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>

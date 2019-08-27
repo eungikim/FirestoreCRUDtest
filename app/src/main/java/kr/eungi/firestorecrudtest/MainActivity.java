@@ -61,12 +61,41 @@ public class MainActivity extends AppCompatActivity {
         mAddNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                writeFirestoreData();
+                ControlDataDialog dialog = new ControlDataDialog(0);
+                dialog.setClickListener(new DialogClickListener() {
+                    @Override
+                    public void onAddClickListener(String name) {
+                        Toast.makeText(MainActivity.this, "name", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onAddRandomClickListener() {
+
+                    }
+
+                    @Override
+                    public void onUpdateClickListener(String name) {
+
+                    }
+
+                    @Override
+                    public void onDeleteClickListener() {
+
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), ControlDataDialog.TAG);
             }
         });
 
         readFirestoreData();
 
+    }
+
+    interface DialogClickListener {
+        void onAddClickListener(String name);
+        void onAddRandomClickListener();
+        void onUpdateClickListener(String name);
+        void onDeleteClickListener();
     }
 
     private void updateList() {
