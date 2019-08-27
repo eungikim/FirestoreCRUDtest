@@ -3,6 +3,7 @@ package kr.eungi.firestorecrudtest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,9 +34,10 @@ import static kr.eungi.firestorecrudtest.db.Constant.DB_FIELD_NAME;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    FirebaseFirestore mFirestoreDb;
+    private FirebaseFirestore mFirestoreDb;
+    private NameAdapter mNameAdapter;
 
-    @BindView(R.id.main_name_recycler_view) RecyclerView mNameRecyclerview;
+    @BindView(R.id.main_name_recycler_view) RecyclerView mNameRecyclerView;
     @BindView(R.id.main_add_new_floating_button) FloatingActionButton mAddNewButton;
 
     @Override
@@ -46,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Access a Cloud Firestore instance from your Activity
         mFirestoreDb = FirebaseFirestore.getInstance();
+
+        mNameAdapter = new NameAdapter();
+        mNameAdapter.setListItemClickListener(new NameAdapter.OnListItemClickListener() {
+            @Override
+            public void onListItemClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "Item Click position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mNameRecyclerView.setAdapter(mNameAdapter);
         
         mAddNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
 
         readFirestoreData();
 
+    }
+
+    private void updateList() {
+        mNameAdapter.notifyDataSetChanged();
     }
 
     private void writeFirestoreData(String addedName) {
@@ -96,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                                 NameRepository repo = NameRepository.getInstance();
                                 Name newName = new Name(document.getId(), document.getString(DB_FIELD_NAME));
                                 repo.addName(newName);
+                                updateList();
                             }
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
