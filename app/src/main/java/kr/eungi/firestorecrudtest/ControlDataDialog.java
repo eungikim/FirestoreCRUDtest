@@ -12,7 +12,11 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+
+import static kr.eungi.firestorecrudtest.util.Constant.DIALOG_FLAG_ADD;
+import static kr.eungi.firestorecrudtest.util.Constant.DIALOG_FLAG_MODIFY;
 
 /**
  * flag : 0은 추가, 1은 수정
@@ -20,12 +24,9 @@ import androidx.fragment.app.DialogFragment;
 public class ControlDataDialog extends DialogFragment {
     static final String TAG = ControlDataDialog.class.getSimpleName();
 
-    private int flag = 0;
+    private int flag;
     private MainActivity.DialogClickListener mOnClickListener;
     private EditText mNameInputEditText;
-    private Button mFistButton;
-    private Button mSecondButton;
-    private Button mCancelButton;
 
     ControlDataDialog(int flag) {
         this.flag = flag;
@@ -35,44 +36,42 @@ public class ControlDataDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Context context = getActivity();
-
         LayoutInflater inflater = LayoutInflater.from(context);
         final View dialogView = inflater.inflate(R.layout.dialog_control_data, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-
         mNameInputEditText = dialogView.findViewById(R.id.dialog_control_data_edit_text);
-        mFistButton = dialogView.findViewById(R.id.dialog_control_data_first_button);
-        mSecondButton = dialogView.findViewById(R.id.dialog_control_data_second_button);
-        mCancelButton = dialogView.findViewById(R.id.dialog_control_data_cancel_button);
+        Button fistButton = dialogView.findViewById(R.id.dialog_control_data_first_button);
+        Button secondButton = dialogView.findViewById(R.id.dialog_control_data_second_button);
+        Button cancelButton = dialogView.findViewById(R.id.dialog_control_data_cancel_button);
 
-        if (flag == 0) {
+        if (flag == DIALOG_FLAG_ADD) {
             builder.setTitle("새로운 이름 추가");
-            mFistButton.setText("추가");
-            mFistButton.setOnClickListener(v -> {
+            fistButton.setText("추가");
+            fistButton.setOnClickListener(v -> {
                 mOnClickListener.onAddClickListener(getName());
                 dismiss();
             });
-            mSecondButton.setText("무작위");
-            mSecondButton.setOnClickListener(v -> {
+            secondButton.setText("무작위");
+            secondButton.setOnClickListener(v -> {
                 mOnClickListener.onAddRandomClickListener();
                 dismiss();
             });
-        } else if (flag == 1) {
+        } else if (flag == DIALOG_FLAG_MODIFY) {
             builder.setTitle("이름 수정");
-            mFistButton.setText("수정");
-            mFistButton.setOnClickListener(v -> {
+            fistButton.setText("수정");
+            fistButton.setOnClickListener(v -> {
                 mOnClickListener.onUpdateClickListener(getName());
                 dismiss();
             });
-            mSecondButton.setText("삭제");
-            mSecondButton.setTextColor(Color.red(170));
-            mSecondButton.setOnClickListener(v -> {
+            secondButton.setText("삭제");
+            secondButton.setTextColor(ContextCompat.getColor(context, R.color.red_a400));
+            secondButton.setOnClickListener(v -> {
                 mOnClickListener.onDeleteClickListener();
                 dismiss();
             });
         }
-        mCancelButton.setOnClickListener(v -> dismiss());
+        cancelButton.setOnClickListener(v -> dismiss());
 
         builder.setView(dialogView);
         return builder.create();

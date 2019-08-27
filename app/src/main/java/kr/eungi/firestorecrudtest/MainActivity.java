@@ -30,6 +30,8 @@ import kr.eungi.firestorecrudtest.util.NameGenerator;
 
 import static kr.eungi.firestorecrudtest.db.Constant.DB_COLLECTION_NAME;
 import static kr.eungi.firestorecrudtest.db.Constant.DB_FIELD_NAME;
+import static kr.eungi.firestorecrudtest.util.Constant.DIALOG_FLAG_ADD;
+import static kr.eungi.firestorecrudtest.util.Constant.DIALOG_FLAG_MODIFY;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -58,44 +60,14 @@ public class MainActivity extends AppCompatActivity {
         });
         mNameRecyclerView.setAdapter(mNameAdapter);
         
-        mAddNewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ControlDataDialog dialog = new ControlDataDialog(0);
-                dialog.setClickListener(new DialogClickListener() {
-                    @Override
-                    public void onAddClickListener(String name) {
-                        Toast.makeText(MainActivity.this, "name", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onAddRandomClickListener() {
-
-                    }
-
-                    @Override
-                    public void onUpdateClickListener(String name) {
-
-                    }
-
-                    @Override
-                    public void onDeleteClickListener() {
-
-                    }
-                });
-                dialog.show(getSupportFragmentManager(), ControlDataDialog.TAG);
-            }
+        mAddNewButton.setOnClickListener(v -> {
+            ControlDataDialog dialog = new ControlDataDialog(DIALOG_FLAG_MODIFY);
+            dialog.setClickListener(mDialogClickListener);
+            dialog.show(getSupportFragmentManager(), ControlDataDialog.TAG);
         });
 
         readFirestoreData();
 
-    }
-
-    interface DialogClickListener {
-        void onAddClickListener(String name);
-        void onAddRandomClickListener();
-        void onUpdateClickListener(String name);
-        void onDeleteClickListener();
     }
 
     private void updateList() {
@@ -215,4 +187,33 @@ public class MainActivity extends AppCompatActivity {
     private String generateName() {
         return NameGenerator.generateName();
     }
+
+    interface DialogClickListener {
+        void onAddClickListener(String name);
+        void onAddRandomClickListener();
+        void onUpdateClickListener(String name);
+        void onDeleteClickListener();
+    }
+
+    DialogClickListener mDialogClickListener = new DialogClickListener() {
+        @Override
+        public void onAddClickListener(String name) {
+
+        }
+
+        @Override
+        public void onAddRandomClickListener() {
+
+        }
+
+        @Override
+        public void onUpdateClickListener(String name) {
+
+        }
+
+        @Override
+        public void onDeleteClickListener() {
+
+        }
+    };
 }
