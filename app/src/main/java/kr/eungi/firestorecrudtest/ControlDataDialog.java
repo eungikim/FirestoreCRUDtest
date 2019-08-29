@@ -3,7 +3,6 @@ package kr.eungi.firestorecrudtest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,13 +23,19 @@ import static kr.eungi.firestorecrudtest.util.Constant.DIALOG_FLAG_MODIFY;
 public class ControlDataDialog extends DialogFragment {
     static final String TAG = ControlDataDialog.class.getSimpleName();
 
-    private int flag;
+    private int mFlag;
+    private int mSelectedPosition;
     private MainActivity.DialogClickListener mOnClickListener;
     private EditText mNameInputEditText;
 
     ControlDataDialog(int flag) {
-        this.flag = flag;
+        this(flag, -1);
     }
+    ControlDataDialog(int flag, int selectedPosition) {
+        this.mFlag = flag;
+        this.mSelectedPosition = selectedPosition;
+    }
+
 
     @NonNull
     @Override
@@ -45,11 +50,11 @@ public class ControlDataDialog extends DialogFragment {
         Button secondButton = dialogView.findViewById(R.id.dialog_control_data_second_button);
         Button cancelButton = dialogView.findViewById(R.id.dialog_control_data_cancel_button);
 
-        if (flag == DIALOG_FLAG_ADD) {
+        if (mFlag == DIALOG_FLAG_ADD) {
             builder.setTitle("새로운 이름 추가");
             fistButton.setText("추가");
             fistButton.setOnClickListener(v -> {
-                mOnClickListener.onAddClickListener(getName());
+                mOnClickListener.onAddClickListener(getInsertedName());
                 dismiss();
             });
             secondButton.setText("무작위");
@@ -57,17 +62,17 @@ public class ControlDataDialog extends DialogFragment {
                 mOnClickListener.onAddRandomClickListener();
                 dismiss();
             });
-        } else if (flag == DIALOG_FLAG_MODIFY) {
+        } else if (mFlag == DIALOG_FLAG_MODIFY) {
             builder.setTitle("이름 수정");
             fistButton.setText("수정");
             fistButton.setOnClickListener(v -> {
-                mOnClickListener.onUpdateClickListener(getName());
+                mOnClickListener.onUpdateClickListener(getInsertedName(), mSelectedPosition);
                 dismiss();
             });
             secondButton.setText("삭제");
             secondButton.setTextColor(ContextCompat.getColor(context, R.color.red_a400));
             secondButton.setOnClickListener(v -> {
-                mOnClickListener.onDeleteClickListener();
+                mOnClickListener.onDeleteClickListener(mSelectedPosition);
                 dismiss();
             });
         }
@@ -81,7 +86,7 @@ public class ControlDataDialog extends DialogFragment {
         mOnClickListener = listener;
     }
 
-    private String getName() {
+    private String getInsertedName() {
         return mNameInputEditText.getText().toString();
     }
 }

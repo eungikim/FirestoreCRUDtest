@@ -3,7 +3,6 @@ package kr.eungi.firestorecrudtest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,19 +54,23 @@ public class MainActivity extends AppCompatActivity {
         mNameAdapter.setListItemClickListener(new NameAdapter.OnListItemClickListener() {
             @Override
             public void onListItemClick(View view, int position) {
-                Toast.makeText(MainActivity.this, "Item Click position: " + position, Toast.LENGTH_SHORT).show();
+                showDataControlDialog(DIALOG_FLAG_MODIFY, position);
             }
         });
         mNameRecyclerView.setAdapter(mNameAdapter);
-        
+
         mAddNewButton.setOnClickListener(v -> {
-            ControlDataDialog dialog = new ControlDataDialog(DIALOG_FLAG_MODIFY);
-            dialog.setClickListener(mDialogClickListener);
-            dialog.show(getSupportFragmentManager(), ControlDataDialog.TAG);
+            showDataControlDialog(DIALOG_FLAG_ADD, -1);
         });
 
         readFirestoreData();
 
+    }
+
+    private void showDataControlDialog(int flag, int selectedPostion) {
+        ControlDataDialog dialog = new ControlDataDialog(flag, selectedPostion);
+        dialog.setClickListener(mDialogClickListener);
+        dialog.show(getSupportFragmentManager(), ControlDataDialog.TAG);
     }
 
     private void updateList() {
@@ -86,9 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        NameRepository repo = NameRepository.getInstance();
-                        Name addedName = new Name(documentReference.getId(), nameSet.get(DB_FIELD_NAME));
-                        repo.addName(addedName);
+                        readFirestoreData();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -107,9 +108,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            NameRepository repo = NameRepository.getInstance();
+                            repo.resetNameList();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                NameRepository repo = NameRepository.getInstance();
                                 Name newName = new Name(document.getId(), document.getString(DB_FIELD_NAME));
                                 repo.addName(newName);
                                 updateList();
@@ -145,8 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void updateFirestoreData(String name) {
-        String documentId = NameRepository.getInstance().findDocIdByName(name);
+    private void updateFirestoreData(String name, String documentId) {
         DocumentReference nameDocumentRef =
                 mFirestoreDb.collection(DB_COLLECTION_NAME).document(documentId);
 
@@ -156,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        readFirestoreData();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -166,13 +168,14 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void deleteFirestoreData() {
-        mFirestoreDb.collection(DB_COLLECTION_NAME).document(NameRepository.getInstance().getNameList().get(0).getDocumentId())
+    private void deleteFirestoreData(String documentId) {
+        mFirestoreDb.collection(DB_COLLECTION_NAME).document(documentId)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        readFirestoreData();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -191,29 +194,31 @@ public class MainActivity extends AppCompatActivity {
     interface DialogClickListener {
         void onAddClickListener(String name);
         void onAddRandomClickListener();
-        void onUpdateClickListener(String name);
-        void onDeleteClickListener();
+        void onUpdateClickListener(String name, int position);
+        void onDeleteClickListener(int position);
     }
 
     DialogClickListener mDialogClickListener = new DialogClickListener() {
         @Override
         public void onAddClickListener(String name) {
-
+            writeFirestoreData(name);
         }
 
         @Override
         public void onAddRandomClickListener() {
-
+            writeFirestoreData(generateName());
         }
 
         @Override
-        public void onUpdateClickListener(String name) {
-
+        public void onUpdateClickListener(String name, int position) {
+            String documentId = NameRepository.getInstance().getNameList().get(position).getDocumentId();
+            updateFirestoreData(name, documentId);
         }
 
         @Override
-        public void onDeleteClickListener() {
-
+        public void onDeleteClickListener(int position) {
+            String documentId = NameRepository.getInstance().getNameList().get(position).getDocumentId();
+            deleteFirestoreData(documentId);
         }
     };
 }

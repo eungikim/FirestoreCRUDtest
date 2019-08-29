@@ -22,10 +22,6 @@ public class Name {
         return mDocumentId;
     }
 
-    public void setDocumentId(String documentId) {
-        mDocumentId = documentId;
-    }
-
     public String getName() {
         return mName;
     }

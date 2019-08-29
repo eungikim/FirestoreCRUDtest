@@ -25,6 +25,10 @@ public class NameRepository {
         return mNameList;
     }
 
+    public void resetNameList() {
+        mNameList.clear();
+    }
+
     public void addName(Name newName) {
         mNameList.add(newName);
     }
