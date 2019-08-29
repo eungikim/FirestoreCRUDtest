@@ -5,6 +5,11 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import butterknife.BindView;
@@ -24,12 +29,14 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.main_name_recycler_view) RecyclerView mNameRecyclerView;
     @BindView(R.id.main_add_new_floating_button) FloatingActionButton mAddNewButton;
+    @BindView(R.id.main_ad_view) AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        initAds();
 
         mNameAdapter = new NameAdapter();
         mNameAdapter.setListItemClickListener((view, position) ->
@@ -51,6 +58,31 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
+    }
 
     private void showDataControlDialog(int flag, int selectedPosition) {
         ControlDataDialog dialog = new ControlDataDialog(flag);
@@ -98,4 +130,15 @@ public class MainActivity extends AppCompatActivity {
             mFirebaseDbQuery.deleteFirestoreData(documentId);
         }
     };
+
+    private void initAds() {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) { }
+        });
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+    }
 }
