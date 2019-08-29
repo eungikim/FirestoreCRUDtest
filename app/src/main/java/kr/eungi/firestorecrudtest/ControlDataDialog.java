@@ -29,11 +29,7 @@ public class ControlDataDialog extends DialogFragment {
     private EditText mNameInputEditText;
 
     ControlDataDialog(int flag) {
-        this(flag, -1);
-    }
-    ControlDataDialog(int flag, int selectedPosition) {
         this.mFlag = flag;
-        this.mSelectedPosition = selectedPosition;
     }
 
 
@@ -84,6 +80,10 @@ public class ControlDataDialog extends DialogFragment {
 
     void setClickListener(MainActivity.DialogClickListener listener) {
         mOnClickListener = listener;
+    }
+
+    void setSelectedPosition(int selectedPosition) {
+        mSelectedPosition = selectedPosition;
     }
 
     private String getInsertedName() {
